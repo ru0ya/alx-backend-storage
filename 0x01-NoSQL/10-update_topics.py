@@ -15,6 +15,6 @@ def update_topics(mongo_collection, name, topics):
 
     Returns: updated list
     """
-    db = mongo_collection.update_one({"name": name}, {"$set":{"topics": topics}})
+    db = mongo_collection.update_one({"name": name}, {"$set":{"topics": topics}})  # updates topic depending on the name
     return db
 
