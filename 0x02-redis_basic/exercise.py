@@ -11,6 +11,19 @@ from typing import Union, Callable, TypeVar
 
 T = TypeVar('T')
 
+
+def count_calls(method: Callable) -> Callable:
+        """
+        Decorator to count the number of times a method is called and store the count in Redis.
+        """
+        @wraps(method)
+        def wrapper(self, *args, **kwargs):
+            key = method.__qualname__  # Use the qualified name of the method as the key
+            self._redis.incr(key)  # Increment the count for the key
+            return method(self, *args, **kwargs)  # Call the original method and return its result
+        return wrapper
+
+
 class Cache:
     def __init__(self):
         self._redis = redis.Redis()
@@ -47,18 +60,6 @@ class Cache:
         Retrieve the data associated with the given key from Redis as an integer.
         """
         return self.get(key, fn=int)
-
-    def count_calls(method: Callable) -> Callable:
-        """
-        Decorator to count the number of times a method is called and store the count in Redis.
-        """
-        @wraps(method)
-        def wrapper(self, *args, **kwargs):
-            key = method.__qualname__  # Use the qualified name of the method as the key
-            self._redis.incr(key)  # Increment the count for the key
-            return method(self, *args, **kwargs)  # Call the original method and return its result
-        return wrapper
-
     def call_history(method: Callable) -> Callable:
         """
         Decorator to store the history of inputs and outputs for a method in Redis.
