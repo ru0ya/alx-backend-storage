@@ -1,22 +1,34 @@
 #!/usr/bin/env python3
 """
-function that returns all students
+Python function that returns all students
 sorted by average score
 """
 
 
 def top_students(mongo_collection):
     """
-    function that returns all students
-    sorted by average score
+    Function to return all students sorted by average
 
-    Parameters: mongo_collection(object)
+    Parameters: mongo_collection(collection object)
 
-    Returns: ordered list
+    Returns: average score(float)
     """
-    students = list(mongo_collection.find())
-    for student in students:
-        scores = student["topics"]
-        avgScore = {$avg: score}
-        student["averageScore"] = avgScore
+    pipeline = [
+        {
+            "$project": {
+                "_id": 1,
+                "name": 1,
+                "scores": 1,
+                "averageScore": {"$avg": "$scores"}
+            }
+        },
+        {
+            "$sort": {"averageScore": -1}
+        }
+    ]
 
+    result = list(mongo_collection.aggregate(pipeline))
+    for student in result:
+        student["averageScore"] = round(student["averageScore"], 2)
+
+    return result
