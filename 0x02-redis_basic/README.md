@@ -1,5 +1,5 @@
 Using python :
-![Alt Text] (redis.png)
+![Redis Logo] (redis.png)
 - Writing strings to Redis
 - Reading from Redis and recovering original type
 - Incrementing values
